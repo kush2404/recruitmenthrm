@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Who Should We Hire? — Human Intelligence + AI Recruitment Game</title>
+<style>
+:root{
+  --navy:#143a63;--blue:#2276d2;--blue2:#eaf4ff;--green:#169b62;--green2:#e8f8f0;
+  --purple:#6d43c5;--purple2:#f1ebff;--orange:#ef8b1e;--orange2:#fff3e4;
+  --red:#d94b4b;--red2:#fff0f0;--gold:#d99b00;--gold2:#fff8df;
+  --bg:#eef5fa;--card:#fff;--text:#163b62;--muted:#5e7388;--line:#d8e5ef;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(#edf5fb,#f7fafc);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+header{background:linear-gradient(135deg,#143f69,#216b9d);color:#fff;padding:22px 18px}
+.wrap{max-width:1180px;margin:auto;padding:16px}
+header h1{margin:0;font-size:32px}
+header p{margin:7px 0 0;font-size:16px}
+.steps{display:flex;gap:8px;overflow-x:auto;padding:5px 0 14px;scrollbar-width:thin}
+.step{
+  flex:0 0 auto;
+  background:#e4edf5;
+  border:2px solid transparent;
+  border-radius:22px;
+  padding:11px 15px;
+  font-weight:700;
+  font-size:13px;
+  color:#46627b;
+  cursor:pointer;
+  font-family:inherit;
+  white-space:nowrap;
+  transition:transform .15s,background .15s,box-shadow .15s,border-color .15s;
+}
+.step:hover{
+  background:#d6e8f8;
+  border-color:#9fc8ea;
+  transform:translateY(-1px);
+}
+.step:active{transform:translateY(0)}
+.step.on{
+  background:var(--blue);
+  color:#fff;
+  border-color:var(--blue);
+  box-shadow:0 5px 14px #2276d244;
+}
+.step.on{background:var(--blue);color:#fff;box-shadow:0 5px 14px #2276d244}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 5px 20px #143a6310;margin-bottom:15px}
+.hero{background:linear-gradient(135deg,#eef7ff,#e8fbfa);border:1px solid #cfe4f2;border-radius:20px;padding:26px;margin-bottom:16px}
+.hero h2{margin:0 0 10px;font-size:30px}
+.hero p{line-height:1.6;margin:6px 0}
+h2,h3{margin-top:0}
+.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:13px}
+.tile{border:1px solid var(--line);background:#f8fbfd;border-radius:15px;padding:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+button,.btn{border:0;border-radius:10px;padding:12px 16px;background:var(--blue);color:white;font-size:15px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.green{background:var(--green)}.dark{background:#294a64}.purple{background:var(--purple)}.orange{background:var(--orange)}.red{background:var(--red)}
+input,select{width:100%;padding:12px;border:1px solid #cbd9e5;border-radius:10px;font:inherit;background:#fff;color:var(--text)}
+label{font-weight:700;font-size:14px}
+.candidate{border:1px solid var(--line);border-radius:15px;padding:15px;margin:10px 0;background:#fff}
+.candidate.selected{border:2px solid var(--green);background:var(--green2)}
+.tag{display:inline-block;padding:5px 9px;border-radius:14px;background:#e9f1f7;margin:2px;font-size:12px;font-weight:700}
+.status{padding:12px;border-radius:10px;background:#eef4f8;margin:10px 0;line-height:1.5}
+.ok{background:var(--green2);color:#17653f}.warn{background:var(--gold2);color:#7c5a00}.err{background:var(--red2);color:#8e2828}
+.choice{display:block;width:100%;margin:7px 0;text-align:left;background:#f5f8fa;color:var(--text);border:1px solid #d6e1e9;cursor:pointer;pointer-events:auto;position:relative;z-index:2}
+.choice:hover{transform:translateY(-1px);box-shadow:0 3px 10px #00000012}
+.choice.selected{background:#e8f3ff;border:2px solid var(--blue)}
+.score{font-size:34px;font-weight:800;color:var(--green)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+th,td{border:1px solid #d6e1e8;padding:9px;text-align:left}
+th{background:#edf4f8}
+.progress{height:10px;background:#dfe8ee;border-radius:10px;overflow:hidden}
+.progress>div{height:100%;background:linear-gradient(90deg,var(--blue),var(--green))}
+.fit-good{background:var(--green2);border-left:6px solid var(--green);padding:16px;border-radius:10px}
+.fit-review{background:var(--gold2);border-left:6px solid var(--gold);padding:16px;border-radius:10px}
+.fit-low{background:var(--red2);border-left:6px solid var(--red);padding:16px;border-radius:10px}
+.theory{cursor:pointer;border:2px solid transparent;transition:.15s}
+.theory:hover{border-color:#9bc9f3;transform:translateY(-2px)}
+.answerA{background:#eaf9f2!important;border-color:#7ad3aa!important}
+.answerB{background:#fff0f0!important;border-color:#f0a1a1!important}
+.answerC{background:#fff8df!important;border-color:#ebcb72!important}
+.answerD{background:#f1ebff!important;border-color:#b9a1ed!important}
+.small{font-size:13px}.center{text-align:center}
+.flow{display:flex;gap:8px;align-items:center;overflow:auto;padding:5px 0}
+.flow .box{white-space:nowrap;background:#edf5fb;border-radius:12px;padding:12px 15px;font-weight:700}
+.flow .arrow{font-size:22px;color:var(--blue)}
+.badge{display:inline-block;padding:7px 11px;border-radius:18px;background:#eaf4ff;font-weight:700;color:#1f6db7}
+.info{background:#edf7ff;border-left:5px solid var(--blue);padding:14px;border-radius:8px;line-height:1.5}
+.sticky{position:sticky;bottom:10px;background:#ffffffee;border:1px solid var(--line);backdrop-filter:blur(8px);padding:12px;border-radius:14px}
+@media(max-width:650px){
+ header h1{font-size:25px}.card,.hero{padding:16px}.row{display:block}.row>*{margin-bottom:8px}
+ table{font-size:12px}.hero h2{font-size:25px}
+}
+
+.pageBackWrap{margin:0 0 12px 0}
+.pageBack{background:#294a64;color:#fff;border:0;border-radius:10px;padding:11px 18px;font:700 15px Arial,Helvetica,sans-serif;cursor:pointer;box-shadow:0 3px 8px #143a6320}
+.pageBack:hover{background:#1d4059;transform:translateY(-1px)}
+.pageBack:active{transform:translateY(0)}
+.paginationBtn{min-height:48px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media(max-width:600px){.row.pagination{display:flex!important;align-items:center;justify-content:center;gap:8px}.row.pagination>*{flex:0 0 auto}.row.pagination .center{min-width:145px}}
+.row button{touch-action:manipulation;min-height:48px}.row button[disabled]{opacity:.45;cursor:not-allowed;pointer-events:none}.candidate button{touch-action:manipulation}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>🎯 Who Should We Hire?</h1>
+    <p>Human Intelligence + AI Recruitment Game • 100 Candidates</p>
+  </div>
+</header>
+<div class="wrap">
+  <div id="steps" class="steps" aria-label="Game stages"></div><div class="small muted" style="margin:-7px 0 10px 4px">💡 Click any stage above to revisit it.</div>
+  <main id="app"></main>
+</div>
+
+<script>
+"use strict";
+
+/* ---------- deterministic candidate pool ---------- */
+const ROLES=["Marketing Executive","HR Executive","Production / Operations Analyst","Finance Analyst"];
+const ROLE_PROFESSIONS={
+  "Marketing Executive":["Marketing Executive","Business Analyst","Sales Executive"],
+  "HR Executive":["HR Executive","People Operations Analyst","Recruitment Specialist"],
+  "Production / Operations Analyst":["Operations Analyst","Supply Chain Analyst","Business Analyst"],
+  "Finance Analyst":["Finance Analyst","Business Analyst","Risk Analyst"]
+};
+const PROFESSIONS=[...new Set(Object.values(ROLE_PROFESSIONS).flat())];
+const DEGREES=["BBA","BCom","BTech","MTech","MBA","MA"];
+const LOCATIONS=["Kolkata","Bengaluru","Mumbai","Delhi","Pune","Hyderabad","Chennai","Ahmedabad"];
+const TIERS=["Tier 1","Tier 2","Tier 3"];
+const SKILLS=["Communication","Analytics","Leadership","Problem Solving","Excel","Java","SQL","Creativity"];
+const NAMES=["Aarav","Aditi","Ananya","Arjun","Diya","Ishaan","Kavya","Meera","Nikhil","Priya","Rahul","Riya","Samar","Sneha","Tanvi","Varun","Zoya","Aditya","Neha","Karan"];
+const candidates=[];
+function hash(n){let x=Math.sin(n*999.91)*43758.5453;return x-Math.floor(x)}
+function makeCandidate(i){
+  const role=ROLES[i%ROLES.length];
+  const profession=PROFESSIONS[(Math.floor(i/4))%PROFESSIONS.length];
+  const degree=DEGREES[(Math.floor(i/4))%DEGREES.length];
+  const location=LOCATIONS[(i*3)%LOCATIONS.length];
+  const tier=TIERS[(i*7)%TIERS.length];
+  const cgpa=+(6.2+hash(i+3)*3.3).toFixed(2);
+  const experience=Math.floor(hash(i+8)*8);
+  const projects=1+Math.floor(hash(i+11)*5);
+  const internships=Math.floor(hash(i+17)*4);
+  const certifications=Math.floor(hash(i+21)*4);
+  const programmingLanguages=Math.floor(hash(i+25)*5);
+  const skillsScore=Math.round(48+hash(i+29)*50);
+  const softSkillsScore=Math.round(48+hash(i+31)*50);
+  const name=NAMES[i%NAMES.length]+" "+String.fromCharCode(65+(i%26))+".";
+  const profile=Math.min(100,Math.round(cgpa/10*30+experience/7*25+projects/5*15+internships/3*10+skillsScore*.2));
+  return {id:i+1,name,role,profession,degree,location,tier,cgpa,experience,projects,internships,certifications,programmingLanguages,skillsScore,softSkillsScore,profile,
+          skills:[SKILLS[(i*3)%SKILLS.length],SKILLS[(i*5+2)%SKILLS.length]]};
+}
+for(let i=0;i<100;i++) candidates.push(makeCandidate(i));
+
+/* ---------- state ---------- */
+let stage=0, selectedRole="", page=1, humanSelected=new Set(), aiResults=[], assessment={},
+    theoryAnswers={}, hiAnswers={}, fairnessAnswers={}, screenFilters={yoe:"",profession:"",tier:"",degree:""};
+
+const labels=["Job Role","Human Screening","AI Ranking","HI vs AI Overlap","Use HI as HR","MBTI Questions","Theory & Constructs","ML Dataset","ML Training","Explainability","Fairness","Final Decision"];
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function app(x){
+  const back = stage>0 ? `<div class="pageBackWrap"><button type="button" class="pageBack" onclick="backOneStage()">← Back</button></div>` : "";
+  document.getElementById("app").innerHTML=back+x;
+}
+function steps(){
+  document.getElementById("steps").innerHTML=labels.map((x,i)=>
+    `<button type="button" class="step ${i===stage?'on':''}" onclick="jumpToStage(${i})" aria-label="Go to ${i+1}. ${x}">
+      ${i+1}. ${x}
+    </button>`
+  ).join("");
+}
+function go(n){stage=n;steps();window.scrollTo({top:0,behavior:"smooth"})}
+function jumpToStage(n){
+  // The top tiles are real navigation controls. Render the requested stage.
+  if(n===0){welcome();return;}
+  if(n===1){if(!selectedRole){welcome();setTimeout(()=>alert("Please select a job role first."),50);return;} screening();return;}
+  if(n===2 || n===3){if(!selectedRole || humanSelected.size!==10){alert("Please select a job role and exactly 10 candidates with Human Intelligence first.");return;} aiCompare();return;}
+  if(n===4){if(!selectedRole || humanSelected.size!==10){alert("Please complete Human Screening and select exactly 10 candidates first.");return;} hiGame();return;}
+  if(n===5){if(!selectedRole || humanSelected.size!==10){alert("Please complete Human Screening and select exactly 10 candidates first.");return;} mbtiStage();return;}
+  if(n===6){theoryStage();return;}
+  if(n===7){datasetStage();return;}
+  if(n===8){mlTraining();return;}
+  if(n===9){if(!model.coefs.length){mlTraining();setTimeout(()=>alert("Please train the ML model first."),50);return;} explainStage();return;}
+  if(n===10){if(!model.coefs.length){mlTraining();setTimeout(()=>alert("Please train the ML model first."),50);return;} fairness();return;}
+  if(n===11){finalDecision();return;}
+}
+
+function backOneStage(){
+  if(stage<=0) return;
+  const previous=stage-1;
+  jumpToStage(previous);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- Stage 1: select the vacancy ---------- */
+function welcome(){
+  go(0);
+  app(`
+  <div class="hero">
+    <span class="badge">🎯 HR Mission</span>
+    <h2>Select the job role before screening candidates</h2>
+    <p>You are the HR manager. First choose <b>one vacancy</b>. The candidate pool shown next will contain more than 10 applicants for that role. You will use <b>Human Intelligence (HI)</b> to shortlist exactly 10.</p>
+  </div>
+  <div class="card">
+    <h3>Which job are we hiring for?</h3>
+    <div class="grid">${ROLES.map((r,i)=>`<button class="choice ${["answerA","answerB","answerC","answerD"][i]}" onclick="selectRole('${r.replaceAll("'","\\'")}')"><b>${["📣","🤝","⚙️","💰"][i]} ${r}</b><br><span class="small">Select this vacancy</span></button>`).join("")}</div>
+    <div id="roleStatus" class="status">No job role selected yet.</div>
+  </div>
+  <div class="info"><b>Game idea:</b> Role first → candidate pool → human shortlist of 10 → AI comparison of the same 10 → HR/HI decision game → continue to assessment, theory, ML and fairness.</div>
+  `);
+}
+function selectRole(role){
+  selectedRole=role; page=1; humanSelected.clear(); aiResults=[]; assessment={}; screenFilters={yoe:"",profession:"",tier:"",degree:""};
+  document.getElementById("roleStatus").innerHTML=`<b>Selected vacancy:</b> ${esc(role)}<br><br><button class="green" onclick="screening()">Continue to Human Screening →</button>`;
+}
+
+/* ---------- Stage 2: human intelligence screening ---------- */
+function screening(){
+  if(!selectedRole){welcome();return}
+  go(1); renderScreen();
+}
+function rolePool(){
+  return candidates.filter(c=>c.role===selectedRole);
+}
+function filteredRolePool(){
+  const pool=rolePool();
+  return pool.filter(c=>{
+    const yoeOK=!screenFilters.yoe || (
+      screenFilters.yoe==="0-2" ? c.experience<=2 :
+      screenFilters.yoe==="3-5" ? c.experience>=3 && c.experience<=5 :
+      screenFilters.yoe==="6+" ? c.experience>=6 : true
+    );
+    const professionOK=!screenFilters.profession || c.profession===screenFilters.profession;
+    const tierOK=!screenFilters.tier || c.tier===screenFilters.tier;
+    const degreeOK=!screenFilters.degree || c.degree===screenFilters.degree;
+    return yoeOK && professionOK && tierOK && degreeOK;
+  });
+}
+function applyScreenFilters(){
+  screenFilters={
+    yoe:document.getElementById("filterYOE")?.value||"",
+    profession:document.getElementById("filterProfession")?.value||"",
+    tier:document.getElementById("filterTier")?.value||"",
+    degree:document.getElementById("filterDegree")?.value||""
+  };
+  page=1;
+  renderScreen();
+}
+function resetScreenFilters(){
+  screenFilters={yoe:"",profession:"",tier:"",degree:""};
+  page=1;
+  renderScreen();
+}
+function firstScreenPage(){ page=1; renderScreen(); }
+function previousScreenPage(){
+  if(page>1){ page--; renderScreen(); }
+}
+function nextScreenPage(){
+  const total=Math.max(1,Math.ceil(filteredRolePool().length/10));
+  if(page<total){ page++; renderScreen(); }
+}
+function firstCandidatePage(){ page=1; renderScreen(); window.scrollTo({top:0,behavior:"smooth"}); }
+function previousCandidatePage(){ if(page>1){ page--; renderScreen(); window.scrollTo({top:0,behavior:"smooth"}); } }
+function nextCandidatePage(){
+  const totalPages=Math.max(1,Math.ceil(filteredRolePool().length/10));
+  if(page<totalPages){ page++; renderScreen(); window.scrollTo({top:0,behavior:"smooth"}); }
+}
+function renderScreen(){
+  const pool=rolePool();
+  if(screenFilters.profession && !pool.some(c=>c.profession===screenFilters.profession)) screenFilters.profession="";
+  if(screenFilters.degree && !pool.some(c=>c.degree===screenFilters.degree)) screenFilters.degree="";
+  if(screenFilters.tier && !pool.some(c=>c.tier===screenFilters.tier)) screenFilters.tier="";
+  const filtered=filteredRolePool();
+  const totalPages=Math.max(1,Math.ceil(filtered.length/10));
+  if(page>totalPages) page=totalPages;
+  const start=(page-1)*10, shown=filtered.slice(start,start+10);
+  const uniqueValues=(key)=>[...new Set(pool.map(c=>c[key]))].sort();
+  const professionOptions=uniqueValues("profession");
+  const degreeOptions=uniqueValues("degree");
+  const tierOptions=uniqueValues("tier");
+  const unique=(arr)=>[...new Set(arr)];
+  const roleProfessions=unique(pool.map(c=>c.profession));
+  const roleTiers=unique(pool.map(c=>c.tier));
+  const roleDegrees=unique(pool.map(c=>c.degree));
+  const filterOptions=(arr,selected)=>arr.map(v=>`<option value="${esc(v)}" ${selected===v?"selected":""}>${esc(v)}</option>`).join("");
+  app(`
+  <div class="hero">
+    <span class="badge">👤 Human Intelligence (HI)</span>
+    <h2>Stage 2 — Human Screening</h2>
+    <p><b>Vacancy: ${esc(selectedRole)}</b></p>
+    <p>There are <b>${pool.length} candidates</b> for this role. Use the filters below to narrow the pool, then use your HR judgement to select exactly <b>10 candidates</b>.</p>
+  </div>
+
+  <div class="card">
+    <h3>🔎 Candidate Filters</h3>
+    <p class="muted">Choose any combination of filters and click <b>Apply Filters</b>. You can reset them at any time.</p>
+    <div class="grid">
+      <div><label>Years of Experience (YOE)</label>
+        <select id="filterYOE">
+          <option value="">All experience</option>
+          <option value="0-2" ${screenFilters.yoe==="0-2"?"selected":""}>0–2 years</option>
+          <option value="3-5" ${screenFilters.yoe==="3-5"?"selected":""}>3–5 years</option>
+          <option value="6+" ${screenFilters.yoe==="6+"?"selected":""}>6+ years</option>
+        </select>
+      </div>
+      <div><label>Profession</label>
+        <select id="filterProfession">
+          <option value="">All professions</option>${filterOptions(professionOptions,screenFilters.profession)}
+        </select>
+      </div>
+      <div><label>University Tier</label>
+        <select id="filterTier">
+          <option value="">All tiers</option>${filterOptions(tierOptions,screenFilters.tier)}
+        </select>
+      </div>
+      <div><label>Degree</label>
+        <select id="filterDegree">
+          <option value="">All degrees</option>${filterOptions(degreeOptions,screenFilters.degree)}
+        </select>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="green" onclick="applyScreenFilters()">✓ Apply Filters</button>
+      <button class="dark" onclick="resetScreenFilters()">↻ Reset Filters</button>
+    </div>
+    <div class="status"><b>Matching candidates:</b> ${filtered.length} of ${pool.length}</div>
+  </div>
+
+  <div class="grid">
+    <div class="tile"><b>Applicants for this role</b><div class="score">${pool.length}</div></div>
+    <div class="tile"><b>After filters</b><div class="score">${filtered.length}</div></div>
+    <div class="tile"><b>Human shortlist</b><div class="score">${humanSelected.size}/10</div></div>
+    <div class="tile"><b>Remaining selections</b><div class="score">${10-humanSelected.size}</div></div>
+  </div>
+
+  <div class="row pagination">
+    <button type="button" class="dark paginationBtn" onclick="firstScreenPage()">First</button>
+    <button type="button" class="paginationBtn" onclick="previousScreenPage()" ${page<=1?"disabled":""}>← Previous</button>
+    <div class="center"><b>Page ${page} of ${totalPages}</b><br><span class="small">${filtered.length ? `Showing ${start+1}–${Math.min(start+10,filtered.length)}` : "No matching candidates"}</span></div>
+    <button type="button" class="paginationBtn" onclick="nextScreenPage()" ${page>=totalPages?"disabled":""}>Next →</button>
+  </div>
+
+  <div id="screenList">
+    ${shown.length ? shown.map(candidateCard).join("") :
+      `<div class="card center"><h3>No candidates match these filters</h3><p>Try changing one filter or click <b>Reset Filters</b>.</p></div>`}
+  </div>
+
+  <div class="sticky row">
+    <button class="dark" onclick="welcome()">← Change Job Role</button>
+    <button class="green" ${humanSelected.size===10?"":"disabled"} onclick="aiCompare()">Compare my 10 with AI →</button>
+  </div>`);
+}
+function candidateCard(c){
+ return `<div class="candidate ${humanSelected.has(c.id)?"selected":""}">
+   <div class="row"><div><b>#${c.id} ${esc(c.name)}</b> <span class="tag">${esc(c.role)}</span></div>
+   <div class="small">${esc(c.profession)} • ${esc(c.degree)} • ${esc(c.tier)} • ${esc(c.location)}</div></div>
+   <p class="small"><b>CGPA:</b> ${c.cgpa} • <b>YOE:</b> ${c.experience} • <b>Skills:</b> ${c.skillsScore} • <b>Soft skills:</b> ${c.softSkillsScore} • <b>Projects:</b> ${c.projects} • <b>Internships:</b> ${c.internships}</p>
+   <button class="${humanSelected.has(c.id)?"green":""}" onclick="toggleHuman(${c.id})">${humanSelected.has(c.id)?"✓ Selected by HI":"Select with Human Intelligence"}</button>
+ </div>`;
+}
+function toggleHuman(id){
+ if(humanSelected.has(id)) humanSelected.delete(id);
+ else if(humanSelected.size<10) humanSelected.add(id);
+ else {alert("Human shortlist is limited to exactly 10 candidates.");return}
+ renderScreen();
+}
+
+/* ---------- Stage 3: AI ranking + HI vs AI overlap ---------- */
+function aiScore(c){
+  const roleMatch=c.role===selectedRole?100:0;
+  return +(0.30*c.skillsScore+0.25*c.softSkillsScore+0.20*c.profile+0.15*Math.min(100,c.experience/7*100)+0.10*roleMatch).toFixed(1);
+}
+
+function aiCompare(){
+  if(humanSelected.size!==10){alert("Please select exactly 10 candidates first.");return}
+  go(2);
+
+  // AI ranks the full candidate pool for the selected vacancy.
+  const pool=rolePool().map(c=>({...c,aiScore:aiScore(c)})).sort((a,b)=>b.aiScore-a.aiScore);
+  aiResults=pool;
+  const aiTop10=pool.slice(0,10);
+  const hiIds=new Set(humanSelected);
+  const overlap=aiTop10.filter(c=>hiIds.has(c.id));
+  const hiOnly=humanSelected.size-overlap.length;
+  const aiOnly=aiTop10.length-overlap.length;
+
+  app(`
+  <div class="hero">
+    <span class="badge">🤖 AI Ranking</span>
+    <h2>Stage 3 — AI Ranks the Candidate Pool</h2>
+    <p><b>Vacancy: ${esc(selectedRole)}</b></p>
+    <p>Human Intelligence has already selected 10 candidates. Now the AI model independently ranks the <b>full candidate pool for this vacancy</b>. We then compare the two shortlists.</p>
+  </div>
+
+  <div class="flow">
+    <div class="box">${pool.length} applicants</div><div class="arrow">→</div>
+    <div class="box">HI selects 10</div><div class="arrow">→</div>
+    <div class="box">AI ranks all</div><div class="arrow">→</div>
+    <div class="box">Compare Top 10</div>
+  </div>
+
+  <div class="grid">
+    <div class="tile"><b>HI shortlist</b><div class="score">10</div><p>Selected by human judgement.</p></div>
+    <div class="tile"><b>AI Top 10</b><div class="score">10</div><p>Highest AI-ranked candidates.</p></div>
+    <div class="tile"><b>Overlap</b><div class="score">${overlap.length}</div><p>Candidates selected by both HI and AI.</p></div>
+    <div class="tile"><b>Different choices</b><div class="score">${hiOnly+aiOnly}</div><p>HI-only + AI-only candidates.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>🔄 What does “Overlap” mean?</h3>
+    <p><b>Overlap = candidates who appear in BOTH shortlists.</b></p>
+    <p>For example, if HR selects 10 candidates and AI's Top 10 contains 6 of those same people, the overlap is <b>6</b>.</p>
+    <div class="status ok"><b>Why is this useful?</b> It shows where human judgement and the AI ranking agree. It also shows where they differ, giving HR a reason to investigate those candidates rather than blindly following either list.</div>
+  </div>
+
+  <div class="card">
+    <h3>🏆 AI Top 10</h3>
+    <table>
+      <tr><th>AI Rank</th><th>Candidate</th><th>YOE</th><th>CGPA</th><th>Skills</th><th>AI Score</th><th>HI?</th></tr>
+      ${aiTop10.map((c,i)=>`<tr class="${hiIds.has(c.id)?"answerA":""}">
+        <td><b>${i+1}</b></td><td>#${c.id} ${esc(c.name)}</td><td>${c.experience}</td><td>${c.cgpa}</td><td>${c.skillsScore}</td><td><b>${c.aiScore}</b></td><td>${hiIds.has(c.id)?"✓ Yes — OVERLAP":"No"}</td>
+      </tr>`).join("")}
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>👥 The Overlap Candidates</h3>
+    ${overlap.length
+      ? `<p>These ${overlap.length} candidates were selected by <b>both HI and AI</b>:</p>
+         <div class="grid">${overlap.map(c=>`<div class="tile"><h3>✓ #${c.id} ${esc(c.name)}</h3><p>${esc(c.role)} • ${c.experience} YOE • CGPA ${c.cgpa}</p><span class="tag">HI Selected</span><span class="tag">AI Top 10</span></div>`).join("")}</div>`
+      : `<div class="status warn"><b>No overlap.</b> The human shortlist and AI Top 10 contain completely different candidates. This is an important HR review point.</div>`
+    }
+  </div>
+
+  <div class="card">
+    <h3>🔎 HI-only and AI-only candidates</h3>
+    <div class="grid">
+      <div class="tile">
+        <h3>HI-only: ${hiOnly}</h3>
+        <p>Selected by HR but not in the AI Top 10.</p>
+        <p>${[...humanSelected].filter(id=>!aiTop10.some(c=>c.id===id)).map(id=>{const c=candidates[id-1];return `<span class="tag">#${c.id} ${esc(c.name)}</span>`}).join(" ")||"None"}</p>
+      </div>
+      <div class="tile">
+        <h3>AI-only: ${aiOnly}</h3>
+        <p>In the AI Top 10 but not selected by HR.</p>
+        <p>${aiTop10.filter(c=>!hiIds.has(c.id)).map(c=>`<span class="tag">#${c.id} ${esc(c.name)}</span>`).join(" ")||"None"}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h2>Next: Use HI + AI together</h2>
+    <p>The next game asks how an HR professional should respond when human judgement and AI agree — or disagree.</p>
+    <button class="green" onclick="hiGame()">🎮 Play the HR + HI Decision Game →</button>
+  </div>`);
+}
+
+/* ---------- Stage 4: how HR uses HI ---------- */
+function hiGame(){
+  go(4);
+  const qs=[
+    ["AI ranks Candidate A #1, but the interview shows poor communication for a client-facing role. What should HR do?","Use the interview evidence and investigate before deciding.","AI is only one source of evidence; human interview context matters."],
+    ["AI ranks Candidate B #7, but B has highly relevant practical experience not captured by the structured fields. What should HR do?","Review the candidate manually and consider the missing context.","HI can identify evidence that a structured model did not capture."],
+    ["Two candidates have almost identical AI scores. What should HR do?","Use structured interview evidence and role-specific human judgement to differentiate them.","A tiny score difference should not replace contextual judgement."],
+    ["AI flags a candidate as lower-scoring because of a career gap. What should HR do?","Understand the reason for the gap before drawing a conclusion.","Context can explain a career gap; the number alone is not the whole story."],
+    ["AI and HR strongly agree on a candidate. Should HR hire automatically?","No. Treat the agreement as useful evidence and complete human review.","Agreement is a signal, not automatic proof of suitability."]
+  ];
+  let done=0,score=0;
+  app(`<div class="hero"><span class="badge">🧠 Human Intelligence Game</span>
+  <h2>Stage 4 — How can HR use HI with AI?</h2>
+  <p>Click one answer for each scenario. Your choice will be highlighted and explained immediately.</p></div>
+  <div class="info"><b>Game rule:</b> Use Human Intelligence when AI needs context, exceptions, interview evidence or professional judgement.</div>
+  <div id="higame"></div><div id="hidone"></div>`);
+  const root=document.getElementById("higame");
+  qs.forEach((q,i)=>{
+    const d=document.createElement("div"); d.className="card";
+    d.innerHTML=`<h3>Scenario ${i+1}</h3><p><b>${q[0]}</b></p>
+      <button type="button" class="choice answerA">A. ${q[1]}</button>
+      <button type="button" class="choice answerB">B. Let AI decide automatically.</button>
+      <div class="status" style="display:none"></div>`;
+    const buttons=d.querySelectorAll("button");
+    buttons[0].addEventListener("click",()=>answer(true));
+    buttons[1].addEventListener("click",()=>answer(false));
+    function answer(ok){
+      if(d.dataset.done==="1") return;
+      d.dataset.done="1"; done++; if(ok)score++;
+      buttons.forEach(b=>{b.disabled=true;b.style.cursor="default";});
+      buttons[ok?0:1].classList.add("selected");
+      const s=d.querySelector(".status");
+      s.style.display="block"; s.className="status "+(ok?"ok":"warn");
+      s.innerHTML=ok?`<b>✓ Good HR judgement.</b><br>${q[2]}`:`<b>⚠ Human review is still needed.</b><br>${q[2]}`;
+      if(done===qs.length){
+        document.getElementById("hidone").innerHTML=`<div class="hero"><h2>HI Game Complete: ${score}/${qs.length}</h2>
+        <p><b>Core lesson:</b> Human Intelligence complements AI by adding context, exceptions, interview evidence and professional judgement.</p>
+        <button type="button" class="green" onclick="mbtiStage()">Continue to MBTI Questions →</button></div>`;
+        document.getElementById("hidone").scrollIntoView({behavior:"smooth",block:"center"});
+      }
+    }
+    root.appendChild(d);
+  });
+}
+
+/* ---------- Stage 5: MBTI-style work-preference activity ---------- */
+const mbtiQuestions=[
+  {q:"When starting a new task, which approach feels more natural?",a:"I prefer to discuss the task with people and exchange ideas first.",b:"I prefer to think quietly and understand the task on my own first.",type:"E/I"},
+  {q:"When solving a work problem, what do you usually focus on first?",a:"Practical facts, details and what is happening right now.",b:"Patterns, possibilities and what could happen next.",type:"S/N"},
+  {q:"When making an important work decision, what tends to guide you more?",a:"Logic, evidence and objective analysis.",b:"People, values and the impact on others.",type:"T/F"},
+  {q:"How do you generally prefer to approach your work?",a:"I like a clear plan, structure and deadlines.",b:"I prefer flexibility and adapting as the situation changes.",type:"J/P"},
+  {q:"In a team discussion, which situation is more comfortable for you?",a:"Sharing ideas openly and thinking through them with the group.",b:"Listening first and contributing after I have formed my thoughts.",type:"E/I"}
+];
+let mbtiAnswers=[],mbtiIndex=0;
+
+function mbtiStage(){
+  go(5); mbtiAnswers=[]; mbtiIndex=0;
+  app(`<div class="hero"><span class="badge">🧠 MBTI-Style Work Preferences</span>
+  <h2>Stage 5 — 5 MBTI Questions</h2>
+  <p>Answer five short work-preference questions. <b>There are no right or wrong answers.</b> This is a simplified classroom activity, not an official MBTI assessment.</p></div>
+  <div class="card"><h3>🎯 Why are we asking?</h3>
+  <p>These questions help HR discuss how a candidate approaches interaction, information, decisions and structure. A preference is <b>not</b> a measure of whether someone is a good or bad hire.</p>
+  <div class="progress"><div id="mbtiProgress" style="width:0%"></div></div>
+  <p id="mbtiProgressText" class="small">Question 0 of 5 answered</p></div>
+  <div id="mbtiBox"></div><div id="mbtiResult"></div>`);
+  renderMBTIQuestion(0);
+}
+function renderMBTIQuestion(i){
+  mbtiIndex=i; const q=mbtiQuestions[i];
+  document.getElementById("mbtiBox").innerHTML=`<div class="card">
+    <span class="badge">Question ${i+1} of 5 • ${q.type}</span>
+    <h3 style="margin-top:14px">${q.q}</h3>
+    <button type="button" class="choice answerA" onclick="answerMBTI(${i},'A')">A. ${q.a}</button>
+    <button type="button" class="choice answerB" onclick="answerMBTI(${i},'B')">B. ${q.b}</button>
+    <div class="status"><b>Remember:</b> Neither answer is better. Choose the option closer to your natural preference.</div>
+  </div>`;
+}
+function answerMBTI(i,choice){
+  mbtiAnswers[i]=choice;
+  const answered=mbtiAnswers.filter(Boolean).length;
+  document.getElementById("mbtiProgress").style.width=(answered/5*100)+"%";
+  document.getElementById("mbtiProgressText").textContent=`Question ${answered} of 5 answered`;
+  if(i<4) renderMBTIQuestion(i+1); else showMBTIResult();
+}
+function showMBTIResult(){
+  let E=0,I=0,S=0,N=0,T=0,F=0,J=0,P=0;
+  mbtiAnswers.forEach((v,i)=>{
+    const t=mbtiQuestions[i].type;
+    if(t==="E/I"){v==="A"?E++:I++}
+    if(t==="S/N"){v==="A"?S++:N++}
+    if(t==="T/F"){v==="A"?T++:F++}
+    if(t==="J/P"){v==="A"?J++:P++}
+  });
+  const profile=`${E>=I?"E":"I"}${S>=N?"S":"N"}${T>=F?"T":"F"}${J>=P?"J":"P"}`;
+  document.getElementById("mbtiBox").innerHTML=`<div class="card"><h3>✅ All 5 questions answered</h3>
+    <p>Your responses have been recorded as a <b>work-preference snapshot</b>.</p></div>`;
+  document.getElementById("mbtiResult").innerHTML=`<div class="hero">
+    <h2>Work-Preference Snapshot: ${profile}</h2>
+    <div class="grid">
+      <div class="tile"><b>${E>=I?"E — Extraversion":"I — Introversion"}</b><p>Interaction or reflection before contributing.</p></div>
+      <div class="tile"><b>${S>=N?"S — Sensing":"N — Intuition"}</b><p>Practical details or possibilities and patterns.</p></div>
+      <div class="tile"><b>${T>=F?"T — Thinking":"F — Feeling"}</b><p>Logic/evidence or people/values when deciding.</p></div>
+      <div class="tile"><b>${J>=P?"J — Judging":"P — Perceiving"}</b><p>Structure/planning or flexibility/adaptation.</p></div>
+    </div>
+    <div class="info"><b>Important:</b> This is a simplified MBTI-style classroom activity, not an official MBTI test. The result does not determine hiring suitability.</div>
+    <button type="button" class="green" onclick="theoryStage()">Continue to Theory & Constructs →</button>
+  </div>`;
+}
+
+/* ---------- Stage 6: theory ---------- */
+function theoryStage(){
+ go(5);
+ const theories=[
+  ["🧠","Bounded Rationality","A recruiter has limited time and cannot process every detail equally. Structured information can narrow a large pool while leaving the final judgement to HR.","100+ candidates → structured evidence → manageable shortlist."],
+  ["🎯","Person–Job Fit","Looks at how candidate capability, experience and role-related evidence match the requirements of the selected vacancy.","Skills + experience + role scenarios → role alignment."],
+  ["🏢","Person–Organization Fit","Looks at whether work preferences and expectations are compatible with the work environment. Preferences are not right or wrong.","Work preferences → context for human discussion."],
+  ["🔄","Social Cognitive Theory","People's behaviour can be shaped by their experience, environment and expectations. The assessment gives a structured way to discuss work behaviour.","Experience + environment + behaviour → work approach."],
+  ["👥","Social Identity / Group Effects","People can be influenced by group membership and social context. HR must be alert to group-based patterns and potential unfairness.","Group context → fairness review, not automatic scoring."]
+ ];
+ app(`<div class="hero"><span class="badge">📚 Learn through interaction</span><h2>Stage 6 — Recruitment Theory & Constructs</h2><p>Click a theory to see <b>what it means</b> and <b>where it appears in the game</b>.</p></div>
+ <div class="grid">${theories.map((t,i)=>`<div class="card theory" onclick="showTheory(${i})"><h3>${t[0]} ${t[1]}</h3><p class="muted">Click to explore →</p></div>`).join("")}</div>
+ <div id="theoryDetail"></div>
+ <div class="card"><h3>🧩 Constructs used in the game</h3><div class="grid">
+ <div class="tile"><b>Candidate Capability</b><p>Skills, experience, education and assessment evidence.</p></div>
+ <div class="tile"><b>Work Preference</b><p>How the candidate describes their preferred way of working.</p></div>
+ <div class="tile"><b>Role Alignment</b><p>How the available evidence matches the selected vacancy.</p></div>
+ <div class="tile"><b>Hiring Outcome</b><p>The final HR decision after human and AI evidence are reviewed.</p></div></div></div>
+ <button class="green" onclick="datasetStage()">Continue to ML Dataset →</button>`);
+}
+const theoryData=[
+ ["Bounded Rationality","A recruiter cannot process every detail of a large pool equally. A structured shortlist reduces cognitive load without removing human responsibility.","The 100+ applicant pool is narrowed to 10 by HI."],
+ ["Person–Job Fit","The selected role provides a reference point for comparing capability and role-related evidence.","Role scenarios, skills, experience and preliminary fit."],
+ ["Person–Organization Fit","Work preferences can help HR discuss how a candidate may operate in a work environment; they are not automatically good or bad.","Work-preference questions with no right/wrong answer."],
+ ["Social Cognitive Theory","Behaviour is influenced by people, experience and environment. It helps frame the candidate's work approach.","Work-preference and scenario responses."],
+ ["Social Identity / Group Effects","Group context can affect behaviour and can also create fairness risks if historical patterns are copied into decisions.","Fairness and human review stage."]
+];
+function showTheory(i){
+ const t=theoryData[i]; document.getElementById("theoryDetail").innerHTML=`<div class="hero"><h3>${t[0]}</h3><p>${t[1]}</p><div class="info"><b>Game connection:</b> ${t[2]}</div></div>`;
+}
+
+/* ---------- Stage 7: dataset ---------- */
+function datasetStage(){
+ go(6);
+ app(`<div class="hero"><span class="badge">🗂️ Data Structure</span><h2>Stage 7 — Recruitment Dataset</h2><p>The game converts candidate information into structured numerical features that an ML model can analyse.</p></div>
+ <div class="flow"><div class="box">Candidate Profile</div><div class="arrow">→</div><div class="box">Feature Preparation</div><div class="arrow">→</div><div class="box">Training / Testing</div><div class="arrow">→</div><div class="box">ML Model</div><div class="arrow">→</div><div class="box">Hiring Probability</div></div>
+ <div class="grid"><div class="tile"><b>Visible candidate pool</b><div class="score">100</div><p>The candidates used in the recruitment game.</p></div>
+ <div class="tile"><b>Training examples</b><div class="score">4,000</div><p>Teaching examples used to demonstrate model training.</p></div>
+ <div class="tile"><b>Holdout examples</b><div class="score">1,000</div><p>Separate teaching examples used to test the trained model.</p></div>
+ <div class="tile"><b>Target</b><div class="score">Hired</div><p>Binary outcome: Yes / No.</p></div></div>
+ <div class="info"><b>Transparency:</b> The embedded training examples are deterministic teaching data created for this offline project. They are not presented as real employee records or evidence of real-world hiring performance.</div>
+ <button class="green" onclick="mlTraining()">Continue to ML Training →</button>`);
+}
+
+/* ---------- Stage 8: ML training ---------- */
+let model={accuracy:0,coefs:[]};
+function makeTrainingRow(i){
+ const c=candidates[i%100];
+ const x=[c.cgpa/10,c.experience/7,c.projects/5,c.internships/3,c.certifications/3,c.programmingLanguages/4,c.skillsScore/100,c.softSkillsScore/100];
+ const latent=.10*x[0]+.20*x[1]+.10*x[2]+.08*x[3]+.07*x[4]+.05*x[5]+.22*x[6]+.18*x[7];
+ const hired=(latent + (hash(i+91)-.5)*.12)>.52?1:0;
+ return {x,y:hired};
+}
+function sigmoid(z){return 1/(1+Math.exp(-Math.max(-30,Math.min(30,z))))}
+function mlTraining(){
+ go(7);
+ app(`<div class="hero"><span class="badge">🤖 Machine Learning</span><h2>Stage 8 — Train the Model</h2><p>The model learns from structured recruitment examples. You can see the training process instead of treating “AI” as a black box.</p></div>
+ <div class="card"><h3>Training setup</h3><p><b>4,000 training rows</b> + <b>1,000 holdout rows</b> • Model: <b>Logistic Regression</b> • Target: <b>Hired (Yes/No)</b></p>
+ <button class="purple" onclick="runML()">▶ Train Logistic Regression</button><div id="mlOut"></div></div>`);
+}
+function runML(){
+ const train=Array.from({length:4000},(_,i)=>makeTrainingRow(i)), test=Array.from({length:1000},(_,i)=>makeTrainingRow(i+4000));
+ let w=new Array(8).fill(0),b=0,lr=.18;
+ for(let epoch=0;epoch<500;epoch++){
+   const gw=new Array(8).fill(0);let gb=0;
+   for(const r of train){const p=sigmoid(b+w.reduce((s,v,j)=>s+v*r.x[j],0)),e=p-r.y;for(let j=0;j<8;j++)gw[j]+=e*r.x[j];gb+=e}
+   for(let j=0;j<8;j++)w[j]-=lr*gw[j]/train.length;
+   b-=lr*gb/train.length;
+ }
+ let good=0;for(const r of test){const p=sigmoid(b+w.reduce((s,v,j)=>s+v*r.x[j],0));if((p>=.5?1:0)===r.y)good++}
+ model={accuracy:good/test.length*100,coefs:w};
+ document.getElementById("mlOut").innerHTML=`<div class="status ok"><b>Training complete.</b> Holdout accuracy on the teaching sample: <b>${model.accuracy.toFixed(1)}%</b>.</div>
+ <table><tr><th>Feature</th><th>Learned coefficient</th></tr>${["CGPA","YOE","Projects","Internships","Certifications","Programming Languages","Skills Score","Soft Skills Score"].map((n,i)=>`<tr><td>${n}</td><td>${w[i].toFixed(3)}</td></tr>`).join("")}</table>
+ <div class="why"><b>Important:</b> This accuracy belongs only to the controlled teaching data. It should not be interpreted as real-world hiring accuracy.</div>
+ <button class="green" onclick="explainStage()">Continue to Explainability →</button>`;
+}
+
+/* ---------- Stage 9: explainability ---------- */
+function explainStage(){
+ go(8);
+ if(!model.coefs.length){mlTraining();return}
+ const shortlist=[...humanSelected].map(id=>candidates[id-1]).map(c=>{
+   const x=[c.cgpa/10,c.experience/7,c.projects/5,c.internships/3,c.certifications/3,c.programmingLanguages/4,c.skillsScore/100,c.softSkillsScore/100];
+   const p=sigmoid(model.coefs.reduce((s,w,i)=>s+w*x[i],0));
+   return {...c,prob:p*100};
+ }).sort((a,b)=>b.prob-a.prob);
+ app(`<div class="hero"><span class="badge">🔍 Explainable AI</span><h2>Stage 9 — AI Recommendation for the 10 Human-Selected Candidates</h2><p>Now the trained model is applied only to the same 10 candidates shortlisted by HI.</p></div>
+ <table><tr><th>AI Rank</th><th>Candidate</th><th>Role</th><th>Skills</th><th>YOE</th><th>Predicted Hired Probability</th></tr>
+ ${shortlist.map((c,i)=>`<tr><td>${i+1}</td><td>#${c.id} ${esc(c.name)}</td><td>${esc(c.role)}</td><td>${c.skillsScore}</td><td>${c.experience}</td><td><b>${c.prob.toFixed(1)}%</b></td></tr>`).join("")}</table>
+ <div class="info"><b>Interpretation:</b> The probability is a model output, not a guarantee. HR should examine the evidence behind the recommendation and any context the model cannot capture.</div>
+ <button class="green" onclick="fairness()">Continue to Fairness →</button>`);
+}
+
+/* ---------- Stage 10: fairness ---------- */
+function fairness(){
+ go(9);
+ const qs=[
+ ["The model does not use gender directly. Could another feature still act as a proxy?","Yes — another variable may indirectly carry similar information.","A proxy is a feature that can reproduce a group-related pattern even when the sensitive characteristic is not explicitly included."],
+ ["The model gives similar average scores to three groups. Does that alone prove fairness?","No.","Averages alone do not prove that the full process is fair. HR should examine outcomes, context and process."],
+ ["A candidate has a career gap and a lower model score. What should HR do?","Review the context with a human.","A career gap can have many explanations and should not automatically be treated as a lack of ability."],
+ ["AI identifies a pattern that may disadvantage a group. What should happen?","Human fairness/compliance review.","AI can flag a pattern; humans must investigate its cause, impact and appropriate response."]
+ ];
+ let done=0,score=0;
+ app(`<div class="hero"><span class="badge">⚖️ Fairness</span><h2>Stage 10 — Fairness Challenge</h2><p>Choose the action an HR reviewer should take. The goal is to understand when AI needs human investigation.</p></div>
+ <div class="grid"><div class="tile"><b>Useful pattern</b><p>A relationship such as stronger relevant skills being associated with better hiring outcomes.</p></div><div class="tile"><b>Potentially unfair pattern</b><p>A feature may indirectly reproduce group differences. HR must investigate before relying on it.</p></div></div>
+ <div id="fairbox"></div><div id="fairdone"></div>`);
+ const root=document.getElementById("fairbox");
+ qs.forEach((q,i)=>{const d=document.createElement("div");d.className="card";d.innerHTML=`<h3>Question ${i+1}</h3><p><b>${q[0]}</b></p><button class="choice answerA">${q[1]}</button><button class="choice answerB">Let AI decide automatically.</button><div class="status" style="display:none"></div>`;const bs=d.querySelectorAll("button");bs[0].onclick=()=>ans(true);bs[1].onclick=()=>ans(false);function ans(ok){if(d.dataset.done)return;d.dataset.done=1;done++;if(ok)score++;bs.forEach(b=>b.disabled=true);const s=d.querySelector(".status");s.style.display="block";s.className="status "+(ok?"ok":"warn");s.innerHTML=ok?`<b>✓ Good judgement.</b> ${q[2]}`:`<b>Human review is needed.</b> ${q[2]}`;if(done===qs.length)document.getElementById("fairdone").innerHTML=`<div class="hero"><h2>Fairness Challenge: ${score}/${qs.length}</h2><p>Fairness is not decided by a single model score. HR must investigate patterns, proxies, exceptions and context.</p><button class="green" onclick="finalDecision()">Continue to Final Decision →</button></div>`}root.appendChild(d)});
+}
+
+/* ---------- Final ---------- */
+function finalDecision(){
+ go(10);
+ const human=[...humanSelected].map(id=>candidates[id-1]);
+ app(`<div class="hero"><span class="badge">🏆 Final HR Decision</span><h2>AI Recommends — HR Decides</h2><p>You have completed the recruitment simulation for <b>${esc(selectedRole)}</b>.</p></div>
+ <div class="grid"><div class="tile"><h3>👤 Human Intelligence contributed</h3><p>Role choice, candidate screening, contextual review, interview judgement, fairness review and exceptions.</p></div>
+ <div class="tile"><h3>🤖 AI contributed</h3><p>Structured comparison, learned patterns, ranking and probability estimates.</p></div>
+ <div class="tile"><h3>⚖️ HR responsibility</h3><p>Question the model, investigate context and make the final decision.</p></div></div>
+ <div class="card"><h3>Your 10 human-selected candidates</h3><p>${human.map(c=>`<span class="tag">#${c.id} ${esc(c.name)}</span>`).join(" ")}</p></div>
+ <div class="why"><b>Core lesson:</b> The recruitment process is not “Human versus AI.” It is <b>Human Intelligence + AI</b>: use AI to process structured information and use HR judgement for context, fairness, exceptions and the final decision.</div>
+ <button class="dark" onclick="welcome()">↻ Start Again</button>`);
+}
+
+/* ---------- start ---------- */
+window.addEventListener("error",e=>{const el=document.getElementById("app");if(el)el.insertAdjacentHTML("afterbegin",`<div class="status err"><b>Game error:</b> ${esc(e.message||"Unknown error")}</div>`)});
+welcome();
+</script>
+</body>
+</html>
